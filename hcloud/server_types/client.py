@@ -1,5 +1,13 @@
+from typing import TYPE_CHECKING
+
 from hcloud.core.client import ClientEntityBase, BoundModelBase, GetEntityByNameMixin
 from hcloud.server_types.domain import ServerType
+
+if TYPE_CHECKING:
+    from typing import Any, Dict, List, Optional
+
+    from hcloud import server_types
+    from hcloud.core.domain import Meta, PageResults
 
 
 class BoundServerType(BoundModelBase):
@@ -31,7 +39,7 @@ class ServerTypesClient(ClientEntityBase, GetEntityByNameMixin):
                Specifies how many results are returned by page
         :return: (List[:class:`BoundServerType <hcloud.server_types.client.BoundServerType>`], :class:`Meta <hcloud.core.domain.Meta>`)
         """
-        params = {}
+        params = {} # type: Dict[str, Any]
         if name is not None:
             params['name'] = name
         if page is not None:

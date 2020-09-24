@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
-from dateutil.parser import isoparse
+from typing import TYPE_CHECKING
 
+from dateutil.parser import isoparse
 from hcloud.core.domain import BaseDomain, DomainIdentityMixin
+
+if TYPE_CHECKING:
+    from hcloud.actions.client import BoundAction
+    from hcloud.images.client import BoundImage
 
 
 class Image(BaseDomain, DomainIdentityMixin):
@@ -57,28 +62,27 @@ class Image(BaseDomain, DomainIdentityMixin):
         "protection",
         "labels",
         "created",
-        "deprecated"
+        "deprecated",
     )
 
     def __init__(
-            self,
-            id=None,
-            name=None,
-            type=None,
-            created=None,
-            description=None,
-            image_size=None,
-            disk_size=None,
-            deprecated=None,
-            bound_to=None,
-            os_flavor=None,
-            os_version=None,
-            rapid_deploy=None,
-            created_from=None,
-            protection=None,
-            labels=None,
-            status=None
-
+        self,
+        id=None,
+        name=None,
+        type=None,
+        created=None,
+        description=None,
+        image_size=None,
+        disk_size=None,
+        deprecated=None,
+        bound_to=None,
+        os_flavor=None,
+        os_version=None,
+        rapid_deploy=None,
+        created_from=None,
+        protection=None,
+        labels=None,
+        status=None,
     ):
         self.id = id
         self.name = name
@@ -106,15 +110,13 @@ class CreateImageResponse(BaseDomain):
     :param action: :class:`BoundAction <hcloud.actions.client.BoundAction>`
            The Action which shows the progress of the Floating IP Creation
     """
-    __slots__ = (
-        "action",
-        "image"
-    )
+
+    __slots__ = ("action", "image")
 
     def __init__(
-            self,
-            action,  # type: BoundAction
-            image  # type: BoundImage
+        self,
+        action,  # type: BoundAction
+        image,  # type: BoundImage
     ):
         self.action = action
         self.image = image

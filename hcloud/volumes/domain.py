@@ -1,7 +1,15 @@
 # -*- coding: utf-8 -*-
+from typing import TYPE_CHECKING
 from dateutil.parser import isoparse
 
 from hcloud.core.domain import BaseDomain, DomainIdentityMixin
+
+
+if TYPE_CHECKING:
+    from typing import List
+
+    from hcloud.actions.client import BoundAction
+    from hcloud.volumes.client import BoundVolume
 
 
 class Volume(BaseDomain, DomainIdentityMixin):

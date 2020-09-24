@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
+from typing import TYPE_CHECKING
 from dateutil.parser import isoparse
 
 from hcloud.core.domain import BaseDomain
+
+
+if TYPE_CHECKING:
+    from hcloud.actions.client import BoundAction
+    from hcloud.networks.client import BoundNetwork
+    from hcloud.load_balancers.client import BoundLoadBalancer
 
 
 class LoadBalancer(BaseDomain):

@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
-from dateutil.parser import isoparse
+from typing import TYPE_CHECKING
 
+from dateutil.parser import isoparse
 from hcloud.core.domain import BaseDomain
+
+if TYPE_CHECKING:
+    from hcloud.actions.client import BoundAction
+    from hcloud.networks.client import BoundNetwork
 
 
 class Network(BaseDomain):
@@ -34,20 +39,20 @@ class Network(BaseDomain):
         "servers",
         "protection",
         "labels",
-        "created"
+        "created",
     )
 
     def __init__(
-            self,
-            id,
-            name=None,
-            created=None,
-            ip_range=None,
-            subnets=None,
-            routes=None,
-            servers=None,
-            protection=None,
-            labels=None,
+        self,
+        id,
+        name=None,
+        created=None,
+        ip_range=None,
+        subnets=None,
+        routes=None,
+        servers=None,
+        protection=None,
+        labels=None,
     ):
         self.id = id
         self.name = name
@@ -72,6 +77,7 @@ class NetworkSubnet(BaseDomain):
     :param gateway: str
               Gateway for the route.
     """
+
     __slots__ = ("type", "ip_range", "network_zone", "gateway")
 
     def __init__(self, ip_range, type=None, network_zone=None, gateway=None):
@@ -109,9 +115,9 @@ class CreateNetworkResponse(BaseDomain):
     __slots__ = ("network", "action")
 
     def __init__(
-            self,
-            network,  # type: BoundNetwork
-            action  # type: BoundAction
+        self,
+        network,  # type: BoundNetwork
+        action,  # type: BoundAction
     ):
         self.network = network
         self.action = action

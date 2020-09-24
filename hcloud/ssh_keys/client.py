@@ -1,7 +1,15 @@
 # -*- coding: utf-8 -*-
+from typing import TYPE_CHECKING
+
 from hcloud.core.client import ClientEntityBase, BoundModelBase, GetEntityByNameMixin
 
 from hcloud.ssh_keys.domain import SSHKey
+
+
+if TYPE_CHECKING:
+    from typing import Any, Dict, List, Optional
+
+    from hcloud.core.domain import Meta, PageResults
 
 
 class BoundSSHKey(BoundModelBase):
@@ -62,7 +70,7 @@ class SSHKeysClient(ClientEntityBase, GetEntityByNameMixin):
                Specifies how many results are returned by page
         :return:  (List[:class:`BoundSSHKey <hcloud.ssh_keys.client.BoundSSHKey>`], :class:`Meta <hcloud.core.domain.Meta>`)
         """
-        params = {}
+        params = {} # type: Dict[str, Any]
         if name is not None:
             params['name'] = name
         if fingerprint is not None:
@@ -129,7 +137,7 @@ class SSHKeysClient(ClientEntityBase, GetEntityByNameMixin):
         data = {
             'name': name,
             'public_key': public_key
-        }
+        } # type: Dict[str, Any]
         if labels is not None:
             data['labels'] = labels
         response = self._client.request(url="/ssh_keys", method="POST", json=data)
@@ -146,7 +154,7 @@ class SSHKeysClient(ClientEntityBase, GetEntityByNameMixin):
                User-defined labels (key-value pairs)
         :return: :class:`BoundSSHKey <hcloud.ssh_keys.client.BoundSSHKey>`
         """
-        data = {}
+        data = {} # type: Dict[str, Any]
         if name is not None:
             data['name'] = name
         if labels is not None:

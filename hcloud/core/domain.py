@@ -1,6 +1,14 @@
 # -*- coding: utf-8 -*-
+from typing import TYPE_CHECKING
 from collections import namedtuple
 
+
+if TYPE_CHECKING:
+    from typing import Any, List
+
+    from hcloud.core.client import BoundModelBase
+
+    PageResults = Any
 
 class BaseDomain(object):
     __slots__ = ()
@@ -68,10 +76,10 @@ class Meta(BaseDomain):
 
 
 def add_meta_to_result(result, json_content, attr_name):
-    # type: (List[BoundModelBase], json, string) -> PageResult
+    # type: (List[BoundModelBase], Any, str) -> PageResults
     class_name = 'PageResults{0}'.format(attr_name.capitalize())
-    PageResults = namedtuple(class_name, [attr_name, 'meta'])
-    return PageResults(**{
+    PageResults = namedtuple(class_name, [attr_name, 'meta']) # type: ignore
+    return PageResults(**{ # type: ignore
         attr_name: result,
         'meta': Meta.parse_meta(json_content)
     })

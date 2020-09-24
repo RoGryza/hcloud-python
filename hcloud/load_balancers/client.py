@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from typing import TYPE_CHECKING
+
 from hcloud.certificates.client import BoundCertificate
 from hcloud.servers.client import BoundServer
 
@@ -14,6 +16,15 @@ from hcloud.load_balancers.domain import LoadBalancer, IPv4Address, IPv6Network,
     CreateLoadBalancerResponse, LoadBalancerTarget, LoadBalancerService, LoadBalancerServiceHttp, \
     LoadBalancerHealthCheck, LoadBalancerHealtCheckHttp, LoadBalancerAlgorithm, LoadBalancerTargetLabelSelector, \
     LoadBalancerTargetIP
+
+
+if TYPE_CHECKING:
+    from typing import Any, Dict, List, Optional, Union
+
+    from hcloud.core.domain import Meta, PageResults
+    from hcloud.networks.domain import Network
+    from hcloud.load_balancer_types.domain import LoadBalancerType
+    from hcloud.locations.domain import Location
 
 
 class BoundLoadBalancer(BoundModelBase):
@@ -295,7 +306,7 @@ class LoadBalancersClient(ClientEntityBase, GetEntityByNameMixin):
                Specifies how many results are returned by page
         :return: (List[:class:`BoundLoadBalancer <hcloud.load_balancers.client.BoundLoadBalancer>`], :class:`Meta <hcloud.core.domain.Meta>`)
         """
-        params = {}
+        params = {} # type: Dict[str, Any]
         if name is not None:
             params["name"] = name
         if label_selector is not None:
@@ -349,7 +360,7 @@ class LoadBalancersClient(ClientEntityBase, GetEntityByNameMixin):
             public_interface=None,  # type: Optional[bool]
             network=None  # type: Optional[Union[Network,BoundNetwork]]
     ):
-        # type: (...) -> CreateLoadBalancerResponse:
+        # type: (...) -> CreateLoadBalancerResponse
         """Creates a Load Balancer .
 
         :param name: str
@@ -427,7 +438,7 @@ class LoadBalancersClient(ClientEntityBase, GetEntityByNameMixin):
                User-defined labels (key-value pairs)
         :return: :class:`BoundLoadBalancer <hcloud.load_balancers.client.BoundLoadBalancer>`
         """
-        data = {}
+        data = {} # type: Dict[str, Any]
         if name is not None:
             data.update({"name": name})
         if labels is not None:
@@ -468,7 +479,7 @@ class LoadBalancersClient(ClientEntityBase, GetEntityByNameMixin):
                Specifies how many results are returned by page
         :return: (List[:class:`BoundAction <hcloud.actions.client.BoundAction>`], :class:`Meta <hcloud.core.domain.Meta>`)
         """
-        params = {}
+        params = {} # type: Dict[str, Any]
         if status is not None:
             params["status"] = status
         if sort is not None:
@@ -637,7 +648,7 @@ class LoadBalancersClient(ClientEntityBase, GetEntityByNameMixin):
         return BoundAction(self._client.actions, response['action'])
 
     def remove_target(self, load_balancer, target):
-        # type: (Union[LoadBalancer, BoundLoadBalancer], LoadBalancerTarget) -> List[BoundAction]
+        # type: (Union[LoadBalancer, BoundLoadBalancer], LoadBalancerTarget) -> BoundAction
         """Removes a target from a Load Balancer.
 
         :param load_balancer: :class:`BoundLoadBalancer <hcloud.load_balancers.client.BoundLoadBalancer>` or :class:`LoadBalancer <hcloud.load_balancers.domain.LoadBalancer>`
@@ -661,7 +672,7 @@ class LoadBalancersClient(ClientEntityBase, GetEntityByNameMixin):
         return BoundAction(self._client.actions, response['action'])
 
     def change_algorithm(self, load_balancer, algorithm):
-        # type: (Union[LoadBalancer, BoundLoadBalancer], Optional[bool]) -> BoundAction
+        # type: (Union[LoadBalancer, BoundLoadBalancer], LoadBalancerAlgorithm) -> BoundAction
         """Changes the algorithm used by the Load Balancer
 
         :param load_balancer: :class:` <hcloud.load_balancers.client.BoundLoadBalancer>` or :class:`LoadBalancer <hcloud.load_balancers.domain.LoadBalancer>`
@@ -766,7 +777,7 @@ class LoadBalancersClient(ClientEntityBase, GetEntityByNameMixin):
         return BoundAction(self._client.actions, response['action'])
 
     def change_type(self, load_balancer, load_balancer_type):
-        # type: ([LoadBalancer, BoundLoadBalancer], [LoadBalancerType, BoundLoadBalancerType]) ->BoundAction
+        # type: (Union[LoadBalancer, BoundLoadBalancer], Union[LoadBalancerType, BoundLoadBalancerType]) -> BoundAction
         """Changes the type of a Load Balancer.
 
         :param load_balancer: :class:`BoundLoadBalancer <hcloud.load_balancers.client.BoundLoadBalancer>` or :class:`LoadBalancer <hcloud.load_balancers.domain.LoadBalancer>`

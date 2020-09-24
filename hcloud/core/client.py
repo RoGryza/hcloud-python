@@ -1,10 +1,23 @@
 # -*- coding: utf-8 -*-
+from typing import TYPE_CHECKING, cast
+
 from hcloud.core.domain import add_meta_to_result
+
+
+if TYPE_CHECKING:
+    from typing import Any, List, Protocol
+
+    from hcloud.core.domain import PageResults
+
+
+    class ListFunction(Protocol):
+        def __call__(self, *args, **kwargs) -> PageResults:
+            ...
 
 
 class ClientEntityBase(object):
     max_per_page = 50
-    results_list_attribute_name = None
+    results_list_attribute_name = None # type: str
 
     def __init__(self, client):
         """
@@ -21,14 +34,14 @@ class ClientEntityBase(object):
 
     def _add_meta_to_result(self,
                             results,  # type: List[BoundModelBase]
-                            response  # type: json
+                            response  # type: Any
                             ):
-        # type: (...) -> PageResult
+        # type: (...) -> PageResults
         self._is_list_attribute_implemented()
         return add_meta_to_result(results, response, self.results_list_attribute_name)
 
     def _get_all(self,
-                 list_function,                # type: function
+                 list_function,                # type: ListFunction
                  results_list_attribute_name,  # type: str
                  *args,
                  **kwargs
@@ -38,8 +51,8 @@ class ClientEntityBase(object):
 
         results = []
 
-        while page:
-            page_result = list_function(page=page, per_page=self.max_per_page, *args, **kwargs)
+        while True:
+            page_result = list_function(*args, page=page, per_page=self.max_per_page, **kwargs)
             result = getattr(page_result, results_list_attribute_name)
             if result:
                 results.extend(result)
@@ -47,7 +60,7 @@ class ClientEntityBase(object):
             if meta and meta.pagination and meta.pagination.next_page and meta.pagination.next_page:
                 page = meta.pagination.next_page
             else:
-                page = None
+                break
 
         return results
 
@@ -63,6 +76,13 @@ class ClientEntityBase(object):
 
         return self._get_all(self.get_actions_list, 'actions', *args, **kwargs)
 
+    if TYPE_CHECKING:
+        def get_list(self, *args, **kwargs) -> PageResults:
+            ...
+
+        def get_actions_list(self, *args, **kwargs) -> PageResults:
+            ...
+
 
 class GetEntityByNameMixin(object):
     """
@@ -71,9 +91,10 @@ class GetEntityByNameMixin(object):
 
     def get_by_name(self, name):
         # type: (str) -> BoundModelBase
-        self._is_list_attribute_implemented()
-        response = self.get_list(name=name)
-        entities = getattr(response, self.results_list_attribute_name)
+        me = cast(ClientEntityBase, self)
+        me._is_list_attribute_implemented()
+        response = me.get_list(name=name)
+        entities = getattr(response, me.results_list_attribute_name)
         entity = entities[0] if entities else None
         return entity
 

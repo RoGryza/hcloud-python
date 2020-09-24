@@ -1,5 +1,14 @@
-from hcloud.core.client import ClientEntityBase, BoundModelBase, GetEntityByNameMixin
+from typing import TYPE_CHECKING
+
+from hcloud.core.client import (BoundModelBase, ClientEntityBase,
+                                GetEntityByNameMixin)
 from hcloud.load_balancer_types.domain import LoadBalancerType
+
+if TYPE_CHECKING:
+    from typing import Any, Dict, List, Optional
+
+    from hcloud import load_balancer_types
+    from hcloud.core.domain import Meta, PageResults
 
 
 class BoundLoadBalancerType(BoundModelBase):
@@ -7,7 +16,7 @@ class BoundLoadBalancerType(BoundModelBase):
 
 
 class LoadBalancerTypesClient(ClientEntityBase, GetEntityByNameMixin):
-    results_list_attribute_name = 'load_balancer_types'
+    results_list_attribute_name = "load_balancer_types"
 
     def get_by_id(self, id):
         # type: (int) -> load_balancer_types.client.BoundLoadBalancerType
@@ -16,8 +25,13 @@ class LoadBalancerTypesClient(ClientEntityBase, GetEntityByNameMixin):
         :param id: int
         :return: :class:`BoundLoadBalancerType <hcloud.load_balancer_type.client.BoundLoadBalancerType>`
         """
-        response = self._client.request(url="/load_balancer_types/{load_balancer_type_id}".format(load_balancer_type_id=id), method="GET")
-        return BoundLoadBalancerType(self, response['load_balancer_type'])
+        response = self._client.request(
+            url="/load_balancer_types/{load_balancer_type_id}".format(
+                load_balancer_type_id=id
+            ),
+            method="GET",
+        )
+        return BoundLoadBalancerType(self, response["load_balancer_type"])
 
     def get_list(self, name=None, page=None, per_page=None):
         # type: (Optional[str], Optional[int], Optional[int]) -> PageResults[List[BoundLoadBalancerType], Meta]
@@ -31,16 +45,21 @@ class LoadBalancerTypesClient(ClientEntityBase, GetEntityByNameMixin):
                Specifies how many results are returned by page
         :return: (List[:class:`BoundLoadBalancerType <hcloud.load_balancer_types.client.BoundLoadBalancerType>`], :class:`Meta <hcloud.core.domain.Meta>`)
         """
-        params = {}
+        params = {}  # type: Dict[str, Any]
         if name is not None:
-            params['name'] = name
+            params["name"] = name
         if page is not None:
-            params['page'] = page
+            params["page"] = page
         if per_page is not None:
-            params['per_page'] = per_page
+            params["per_page"] = per_page
 
-        response = self._client.request(url="/load_balancer_types", method="GET", params=params)
-        load_balancer_types = [BoundLoadBalancerType(self, load_balancer_type_data) for load_balancer_type_data in response['load_balancer_types']]
+        response = self._client.request(
+            url="/load_balancer_types", method="GET", params=params
+        )
+        load_balancer_types = [
+            BoundLoadBalancerType(self, load_balancer_type_data)
+            for load_balancer_type_data in response["load_balancer_types"]
+        ]
         return self._add_meta_to_result(load_balancer_types, response)
 
     def get_all(self, name=None):

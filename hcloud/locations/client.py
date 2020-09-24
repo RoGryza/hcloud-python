@@ -1,7 +1,15 @@
 # -*- coding: utf-8 -*-
-from hcloud.core.client import ClientEntityBase, BoundModelBase, GetEntityByNameMixin
+from typing import TYPE_CHECKING
 
+from hcloud.core.client import (BoundModelBase, ClientEntityBase,
+                                GetEntityByNameMixin)
 from hcloud.locations.domain import Location
+
+if TYPE_CHECKING:
+    from typing import Any, Dict, List, Optional
+
+    from hcloud import locations
+    from hcloud.core.domain import Meta, PageResults
 
 
 class BoundLocation(BoundModelBase):
@@ -9,7 +17,7 @@ class BoundLocation(BoundModelBase):
 
 
 class LocationsClient(ClientEntityBase, GetEntityByNameMixin):
-    results_list_attribute_name = 'locations'
+    results_list_attribute_name = "locations"
 
     def get_by_id(self, id):
         # type: (int) -> locations.client.BoundLocation
@@ -18,11 +26,13 @@ class LocationsClient(ClientEntityBase, GetEntityByNameMixin):
         :param id: int
         :return: :class:`BoundLocation <hcloud.locations.client.BoundLocation>`
         """
-        response = self._client.request(url="/locations/{location_id}".format(location_id=id), method="GET")
-        return BoundLocation(self, response['location'])
+        response = self._client.request(
+            url="/locations/{location_id}".format(location_id=id), method="GET"
+        )
+        return BoundLocation(self, response["location"])
 
     def get_list(self, name=None, page=None, per_page=None):
-        # type: (Optional[str], Optional[int], Optional[int]) -> PageResult[List[BoundLocation], Meta]
+        # type: (Optional[str], Optional[int], Optional[int]) -> PageResults[List[BoundLocation], Meta]
         """Get a list of locations
 
         :param name: str (optional)
@@ -33,7 +43,7 @@ class LocationsClient(ClientEntityBase, GetEntityByNameMixin):
                Specifies how many results are returned by page
         :return: (List[:class:`BoundLocation <hcloud.locations.client.BoundLocation>`], :class:`Meta <hcloud.core.domain.Meta>`)
         """
-        params = {}
+        params = {}  # type: Dict[str, Any]
         if name is not None:
             params["name"] = name
         if page is not None:
@@ -42,7 +52,10 @@ class LocationsClient(ClientEntityBase, GetEntityByNameMixin):
             params["per_page"] = per_page
 
         response = self._client.request(url="/locations", method="GET", params=params)
-        locations = [BoundLocation(self, location_data) for location_data in response['locations']]
+        locations = [
+            BoundLocation(self, location_data)
+            for location_data in response["locations"]
+        ]
         return self._add_meta_to_result(locations, response)
 
     def get_all(self, name=None):

@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 import time
+from typing import TYPE_CHECKING
 
 from hcloud.core.client import ClientEntityBase, BoundModelBase
 from hcloud.actions.domain import Action, ActionFailedException, ActionTimeoutException
+
+
+if TYPE_CHECKING:
+    from typing import Any, Dict, List, Optional
+    from hcloud.core.domain import PageResults
 
 
 class BoundAction(BoundModelBase):
@@ -61,7 +67,7 @@ class ActionsClient(ClientEntityBase):
                Specifies how many results are returned by page
         :return: (List[:class:`BoundAction <hcloud.actions.client.BoundAction>`], :class:`Meta <hcloud.core.domain.Meta>`)
         """
-        params = {}
+        params = {} # type: Dict[str, Any]
         if status is not None:
             params["status"] = status
         if sort is not None:

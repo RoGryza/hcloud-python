@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
-from hcloud.core.client import ClientEntityBase, BoundModelBase, GetEntityByNameMixin
+from typing import TYPE_CHECKING
 
+from hcloud.core.client import (BoundModelBase, ClientEntityBase,
+                                GetEntityByNameMixin)
 from hcloud.datacenters.domain import Datacenter, DatacenterServerTypes
 from hcloud.locations.client import BoundLocation
 from hcloud.server_types.client import BoundServerType
+
+if TYPE_CHECKING:
+    from typing import Any, Dict, List, Optional
+
+    from hcloud.core.domain import Meta, PageResults
 
 
 class BoundDatacenter(BoundModelBase):
@@ -12,24 +19,39 @@ class BoundDatacenter(BoundModelBase):
     def __init__(self, client, data):
         location = data.get("location")
         if location is not None:
-            data['location'] = BoundLocation(client._client.locations, location)
+            data["location"] = BoundLocation(client._client.locations, location)
 
         server_types = data.get("server_types")
         if server_types is not None:
-            available = [BoundServerType(client._client.server_types, {"id": server_type}, complete=False) for
-                         server_type in server_types['available']]
-            supported = [BoundServerType(client._client.server_types, {"id": server_type}, complete=False) for
-                         server_type in server_types['supported']]
-            available_for_migration = [BoundServerType(client._client.server_types, {"id": server_type}, complete=False)
-                                       for server_type in server_types['available_for_migration']]
-            data['server_types'] = DatacenterServerTypes(available=available, supported=supported,
-                                                         available_for_migration=available_for_migration)
+            available = [
+                BoundServerType(
+                    client._client.server_types, {"id": server_type}, complete=False
+                )
+                for server_type in server_types["available"]
+            ]
+            supported = [
+                BoundServerType(
+                    client._client.server_types, {"id": server_type}, complete=False
+                )
+                for server_type in server_types["supported"]
+            ]
+            available_for_migration = [
+                BoundServerType(
+                    client._client.server_types, {"id": server_type}, complete=False
+                )
+                for server_type in server_types["available_for_migration"]
+            ]
+            data["server_types"] = DatacenterServerTypes(
+                available=available,
+                supported=supported,
+                available_for_migration=available_for_migration,
+            )
 
         super(BoundDatacenter, self).__init__(client, data)
 
 
 class DatacentersClient(ClientEntityBase, GetEntityByNameMixin):
-    results_list_attribute_name = 'datacenters'
+    results_list_attribute_name = "datacenters"
 
     def get_by_id(self, id):
         # type: (int) -> BoundDatacenter
@@ -38,14 +60,17 @@ class DatacentersClient(ClientEntityBase, GetEntityByNameMixin):
         :param id: int
         :return: :class:`BoundDatacenter <hcloud.datacenters.client.BoundDatacenter>`
         """
-        response = self._client.request(url="/datacenters/{datacenter_id}".format(datacenter_id=id), method="GET")
-        return BoundDatacenter(self, response['datacenter'])
+        response = self._client.request(
+            url="/datacenters/{datacenter_id}".format(datacenter_id=id), method="GET"
+        )
+        return BoundDatacenter(self, response["datacenter"])
 
-    def get_list(self,
-                 name=None,  # type: Optional[str]
-                 page=None,  # type: Optional[int]
-                 per_page=None  # type: Optional[int]
-                 ):
+    def get_list(
+        self,
+        name=None,  # type: Optional[str]
+        page=None,  # type: Optional[int]
+        per_page=None,  # type: Optional[int]
+    ):
         # type: (...) -> PageResults[List[BoundDatacenter], Meta]
         """Get a list of datacenters
 
@@ -57,19 +82,22 @@ class DatacentersClient(ClientEntityBase, GetEntityByNameMixin):
                Specifies how many results are returned by page
         :return: (List[:class:`BoundDatacenter <hcloud.datacenters.client.BoundDatacenter>`], :class:`Meta <hcloud.core.domain.Meta>`)
         """
-        params = {}
+        params = {}  # type: Dict[str, Any]
         if name is not None:
             params["name"] = name
 
         if page is not None:
-            params['page'] = page
+            params["page"] = page
 
         if per_page is not None:
-            params['per_page'] = per_page
+            params["per_page"] = per_page
 
         response = self._client.request(url="/datacenters", method="GET", params=params)
 
-        datacenters = [BoundDatacenter(self, datacenter_data) for datacenter_data in response['datacenters']]
+        datacenters = [
+            BoundDatacenter(self, datacenter_data)
+            for datacenter_data in response["datacenters"]
+        ]
 
         return self._add_meta_to_result(datacenters, response)
 

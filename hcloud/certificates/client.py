@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
+from typing import TYPE_CHECKING
+
 from hcloud.core.client import ClientEntityBase, BoundModelBase, GetEntityByNameMixin
 
 from hcloud.certificates.domain import Certificate
+
+
+if TYPE_CHECKING:
+    from typing import Any, Dict, List, Optional
+    from hcloud.core.domain import Meta, PageResults
 
 
 class BoundCertificate(BoundModelBase):
@@ -59,7 +66,7 @@ class CertificatesClient(ClientEntityBase, GetEntityByNameMixin):
                Specifies how many results are returned by page
         :return: (List[:class:`BoundCertificate <hcloud.certificates.client.BoundCertificate>`], :class:`Meta <hcloud.core.domain.Meta>`)
         """
-        params = {}
+        params = {} # type: Dict[str, Any]
         if name is not None:
             params["name"] = name
 
@@ -79,7 +86,7 @@ class CertificatesClient(ClientEntityBase, GetEntityByNameMixin):
         return self._add_meta_to_result(certificates, response)
 
     def get_all(self, name=None, label_selector=None):
-        # type: (Optional[str]) -> List[BoundCertificate]
+        # type: (Optional[str], Optional[str]) -> List[BoundCertificate]
         """Get all certificates
 
         :param name: str (optional)
@@ -101,7 +108,7 @@ class CertificatesClient(ClientEntityBase, GetEntityByNameMixin):
         return super(CertificatesClient, self).get_by_name(name)
 
     def create(self, name, certificate, private_key, labels=None):
-        # type: (str, str, Optional[Dict[str, str]]) -> BoundCertificate
+        # type: (str, str, str, Optional[Dict[str, str]]) -> BoundCertificate
         """Creates a new Certificate with the given name, certificate and private_key.
 
         :param name: str
@@ -117,7 +124,7 @@ class CertificatesClient(ClientEntityBase, GetEntityByNameMixin):
             'name': name,
             'certificate': certificate,
             'private_key': private_key
-        }
+        } # type: Dict[str, Any]
         if labels is not None:
             data['labels'] = labels
         response = self._client.request(url="/certificates", method="POST", json=data)
@@ -134,7 +141,7 @@ class CertificatesClient(ClientEntityBase, GetEntityByNameMixin):
                User-defined labels (key-value pairs)
         :return: :class:`BoundCertificate <hcloud.certificates.client.BoundCertificate>`
         """
-        data = {}
+        data = {} # type: Dict[str, Any]
         if name is not None:
             data['name'] = name
         if labels is not None:
